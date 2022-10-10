@@ -24,7 +24,7 @@ const roles = [
     },
     {
         name: "Owner",
-        players: [{nickname: "ONN", auth: "XtkMvzsGb xEJJkTiA2Zoff_Hk36asU7e5paWVxDDwNk"}]
+        players: [{nickname: "ONN", auth: "XtkMvzsGbxEJJkTiA2Zoff_Hk36asU7e5paWVxDDwNk"}]
     }
 ];
 const commands = [
