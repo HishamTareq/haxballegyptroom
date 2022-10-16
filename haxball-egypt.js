@@ -1,5 +1,8 @@
+let colors = {};
+colors.error = 0xac5c5c;
 let prefix = "!";
 let commands = [];
+commands[0] = {name: "help", id: 1, active: true, permissions: ["User", "Admin", "Super", "Owner"]};
 let roles = {};
 roles.super = [];
 roles.owner = [];
@@ -30,13 +33,23 @@ let room = HBInit({
 });
 room.onPlayerJoin = function (player) {
   check(player) && (setPlayerRole(player), updateConnList(player, true),
-  updatePlayerList(player, true));
-  console.log(player.role);
+  updatePlayerList(player, true), alertHelpMessage());
 }
 ;
 room.onPlayerLeave = function (player) {
   updateConnList(player);
   updatePlayerList(player);
+}
+;
+room.onPlayerChat = function (player, message) {
+  if (isCommandSyntax(message)) {
+    if (getCommand(message)) {
+      return runCommand(getCommand(message), player);
+    } else {
+      room.sendAnnouncement(message + " is not recognized as command", player.id, colors.error, "small", 2);
+      return false;
+    };
+  }
 }
 ;
 function updateConnList(player, isNew) {
@@ -62,6 +75,29 @@ function setPlayerRole(player) {
     });
   }
   player.role ??= "User";
+}
+;
+function isCommandSyntax(txt) {
+  return txt.length > 1 && txt.startsWith(prefix);
+}
+;
+function getCommand(message) {
+  return commands.find(c => message.slice(1) === c.name);
+}
+;
+function runCommand(command, player) {
+  let a = command.id;
+  if (a == 1) {
+    
+  }
+}
+;
+function alertHelpMessage() {
+  room.sendAnnouncement("Type " + prefix + getCommandName(1) + " to see all commands.");
+}
+;
+function getCommandName(commandId) {
+  return commands.find(c => c.id == commandId).name;
 }
 ;
 String.prototype.capitalize = function () {
