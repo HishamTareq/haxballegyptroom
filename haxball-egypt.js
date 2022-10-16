@@ -1,120 +1,69 @@
+let prefix = "!";
+let commands = [];
 let roles = {};
+roles.super = [];
+roles.owner = [];
+roles.super[0] = {name: "ONN", auth: "XtkMvzsGbxEJJkTiA2Zoff_Hk36asU7e5paWVxDDwNk"};
+let conn = [];
 let current = {};
-let roomName = "null";
+current.players = [];
+let roomName = "🦶 HaxBall EGYPT v1.0 🦿";
 let password = "1";
-let playerName = "B0T";
-let token = "thr1.AAAAAGM9oyhuRo5yaY2aqQ.EmsjVlU4Db8";
-let noPlayer = false;
-let maxPlayers = 16;
 let public = true;
-let geo = {"lat": 31.2162,"lon": 29.9529,"code": "eg"};
+let token = null;
+let geo = {};
+geo.code = "eg";
+geo.lat = 31.2162;
+geo.lon = 29.9529;
+let maxPlayers = 10;
+let noPlayer = false;
+let playerName = "B0T";
 let room = HBInit({
   roomName: roomName,
-  public: public,
   password: password,
+  public: public,
+  maxPlayers: maxPlayers,
+  noPlayer: noPlayer,
   playerName: playerName,
   token: token,
   geo: geo,
-  noPlayer: noPlayer,
-  maxPlayers: maxPlayers
-})
-roles.super = [];
-roles.owner = [
-  {
-    name: "ONN",
-    auth: "XtkMvzsGbxEJJkTiA2Zoff_Hk36asU7e5paWVxDDwNk"
-  }
-];
-current.user = [];
-current.admin = [];
-current.super = [];
-current.owner = [];
-current.conns = [];
-current.afks = [];
-
-/*======================= 
-  End Of Initialization
-=========================*/
-
-setInterval(() => {
-  room.setTeamsLock(true);
-}, 0)
-;
+});
 room.onPlayerJoin = function (player) {
-  !checkConn(player) && !setPlayerRole(player) && updatePlayerRoleList(player);
+  check(player) && (setPlayerRole(player), updateConnList(player, true),
+  updatePlayerList(player, true));
+  console.log(player.role);
 }
 ;
 room.onPlayerLeave = function (player) {
   updateConnList(player);
+  updatePlayerList(player);
 }
 ;
-room.onPlayerAdminChange = function (changedPlayer, byPlayer) {
-  updateAdminList(changedPlayer);
+function updateConnList(player, isNew) {
+  conn.find((p, i) => (player.id == p.id ? conn.splice(i, 1) : false)) || (isNew && conn.push(player));
 }
 ;
-room.onPlayerChat = function (player, message) {
-
+function check(player) { 
+  return conn.find(p => player.conn == p.conn) ? kick(player, "No more than one user from your network is allowed in this room") : true;
+}
+;
+function kick(player, reason) {
+  room.kickPlayer(player.id, reason, false);
+}
+;
+function updatePlayerList(player, isNew) {
+  current.players.find((p, i) => (player.id == p.id ? current.players.splice(i, 1) : false)) || (isNew && current.players.push(player));
 }
 ;
 function setPlayerRole(player) {
-  for (const role in roles) {
-    roles[role].forEach(p => {
-      if (player.name === p.name && player.auth === p.auth) {
-        player.role = role.capitalize();
-      }
+  for (const r in roles) {
+    roles[r].forEach(p => {
+      (p.auth === player.auth) && (p.name === player.name) && (player.role = r.capitalize());
     });
   }
-  if (!player.role) {
-    player.role = "User";
-  }
-}
-;
-function updateConnList(player) {
-  current.conns.forEach((p, i) => {
-    if (player.id == p.id) {
-      current.conns.splice(i, 1);
-    }
-  });
-}
-;
-function checkConn(player) {
-  let a = current.conns.find(p => player.conn == p.conn);
-  if (a) {
-    room.kickPlayer(player.id, "Only one user from your network is allowed.", false);
-  } else {
-    let p = {};
-    p.name = player.name;
-    p.id = player.id;
-    p.conn = player.conn;
-    current.conns.push(p);
-    return false;
-  }
-  return true;
-}
-;
-function updatePlayerRoleList(player) {
-  current[player.role.toLowerCase()].push({
-    name: player.name,
-      id: player.id,
-      auth: player.auth,
-    });
-}
-;
-function updateAdminList(player) {
-  if (player.admin) {
-    current.admin.push({
-      name: player.name,
-      id: player.id,
-    });
-  } else {
-    current.admin.forEach((r, i) => {
-      if (player.id === r.id) {
-        current.admin.splice(i, 1);
-      }
-    });
-  }
+  player.role ??= "User";
 }
 ;
 String.prototype.capitalize = function () {
-  return this[0].toUpperCase() + this.slice(1);
+  return this.charAt(0).toUpperCase() + this.slice(1);
 }
