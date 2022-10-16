@@ -1,5 +1,6 @@
 let colors = {};
-colors.error = 0xac5c5c;
+colors["error"] = 0xAC5C5C;
+colors["Caribbean Green"] = 0x04CFAC;
 let prefix = "!";
 let commands = [];
 commands[0] = {name: "help", id: 1, active: true, permissions: ["User", "Admin", "Super", "Owner"]};
@@ -33,7 +34,7 @@ let room = HBInit({
 });
 room.onPlayerJoin = function (player) {
   check(player) && (setPlayerRole(player), updateConnList(player, true),
-  updatePlayerList(player, true), alertHelpMessage());
+  updatePlayerList(player, true), alertHelpMessage(player));
 }
 ;
 room.onPlayerLeave = function (player) {
@@ -87,13 +88,15 @@ function getCommand(message) {
 ;
 function runCommand(command, player) {
   let a = command.id;
+  console.log(a)
+  // role
   if (a == 1) {
-    
+    room.sendAnnouncement(`Commands: ${commands.map(c => prefix + c.name).join(", ")}`, player.id, colors["Caribbean Green"], "small", 1);
   }
 }
 ;
-function alertHelpMessage() {
-  room.sendAnnouncement("Type " + prefix + getCommandName(1) + " to see all commands.");
+function alertHelpMessage(player) {
+  room.sendAnnouncement("Type " + prefix + getCommandName(1) + " to see all commands.", player.id, colors["Caribbean Green"], "normal", 1);
 }
 ;
 function getCommandName(commandId) {
