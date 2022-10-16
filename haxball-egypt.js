@@ -1,27 +1,27 @@
-let colors = {};
-colors["error"] = 0xAC5C5C;
-colors["Caribbean Green"] = 0x04CFAC;
-let prefix = "!";
 let commands = [];
-commands[0] = {name: "help", id: 1, active: true, permissions: ["User", "Admin", "Super", "Owner"]};
-let roles = {};
-roles.super = [];
-roles.owner = [];
-roles.super[0] = {name: "ONN", auth: "XtkMvzsGbxEJJkTiA2Zoff_Hk36asU7e5paWVxDDwNk"};
 let conn = [];
+let colors = {};
+let roles = {};
+let geo = {};
 let current = {};
-current.players = [];
+let prefix = "!";
 let roomName = "🦶 HaxBall EGYPT v1.0 🦿";
 let password = "1";
 let public = true;
 let token = null;
-let geo = {};
-geo.code = "eg";
-geo.lat = 31.2162;
-geo.lon = 29.9529;
 let maxPlayers = 10;
 let noPlayer = false;
 let playerName = "B0T";
+geo.code = "eg";
+geo.lat = 31.2162;
+geo.lon = 29.9529;
+current.players = [];
+colors["error"] = 0xAC5C5C;
+colors["Caribbean Green"] = 0x04CFAC;
+roles.super = [];
+roles.owner = [];
+roles.owner[0] = {name: "ONN", auth: "XtkMvzsGbxEJJkTiA2Zoff_Hk36asU7e5paWVxDDwNk"};
+commands[0] = {name: "help", id: 1, active: true, permissions: ["User", "Admin", "Super", "Owner"]};
 let room = HBInit({
   roomName: roomName,
   password: password,
@@ -32,6 +32,7 @@ let room = HBInit({
   token: token,
   geo: geo,
 });
+
 room.onPlayerJoin = function (player) {
   check(player) && (setPlayerRole(player), updateConnList(player, true),
   updatePlayerList(player, true), alertHelpMessage(player));
