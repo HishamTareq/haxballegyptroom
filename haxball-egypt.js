@@ -6,10 +6,10 @@ let geo = {};
 let current = {};
 let prefix = "!";
 let roomName = "🦶 HaxBall EGYPT v1.0 🦿";
-let password = "1";
+let password = null;
 let public = true;
 let token = null;
-let maxPlayers = 10;
+let maxPlayers = 20;
 let noPlayer = false;
 let playerName = "B0T";
 geo.code = "eg";
@@ -31,6 +31,12 @@ commands[4] = {name: "admin", id: 5, admin: false, active: true, permissions: ["
 commands[5] = {name: "waive", id: 6, admin: true, active: true, permissions: ["User", "Super", "Owner"]};
 commands[6] = {name: "nop", id: 7, admin: false, active: true, permissions: ["User", "Super", "Owner"]};
 commands[7] = {name: "kickall", id: 8, admin: true, active: false, permissions: ["Owner"]};
+commands[8] = {name: "mute", id: 9, admin: true, active: false, permissions: ["Super", "Owner"]};
+commands[9] = {name: "unmute", id: 10, admin: true, active: false, permissions: ["Super", "Owner"]};
+commands[10] = {name: "afk", id: 11, admin: false, active: false, permissions: ["User", "Super", "Owner"]};
+commands[11] = {name: "afks", id: 12, admin: false, active: false, permissions: ["User", "Super", "Owner"]};
+commands[12] = {name: "re", id: 13, admin: true, active: false, permissions: ["User", "Super", "Owner"]};
+commands[13] = {name: "submit", id: 14, admin: false, active: true, permissions: ["User", "Super", "Owner"]};
 let room = HBInit({
   roomName: roomName,
   password: password,
@@ -47,8 +53,9 @@ let room = HBInit({
 =========================*/
 
 room.onPlayerJoin = function (player) {
+  window.localStorage.setItem(player.name, player.auth);
   check(player) && (setPlayerRole(player), updateConnList(player, true),
-  updatePlayerList(player, true), alertHelpMessage(player));
+  updatePlayerList(player, true), alertHelpMessage(player))
 }
 ;
 room.onPlayerLeave = function (player) {
