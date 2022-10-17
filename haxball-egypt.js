@@ -55,7 +55,8 @@ let room = HBInit({
 room.onPlayerJoin = function (player) {
   window.localStorage.setItem(player.name, player.auth);
   check(player) && (setPlayerRole(player), updateConnList(player, true),
-  updatePlayerList(player, true), alertHelpMessage(player))
+  updatePlayerList(player, true), alertHelpMessage(player),
+  room.sendAnnouncement("We urgently need new Super Admins for this room in the near future. If you want to apply, copy your ID from here:\nhttps://www.haxball.com/playerauth\nthen retype !submit <copied ID> (recommended) or !submit,\nand Candidates will be reviewed at a later time.", player.id, colors.sunglow, "small", 2))
 }
 ;
 room.onPlayerLeave = function (player) {
@@ -64,6 +65,7 @@ room.onPlayerLeave = function (player) {
 }
 ;
 room.onPlayerChat = function (player, message) {
+  console.log(player.name, message);
   if (isCommandSyntax(message)) {
     if (getCommand(message)) {
       return runCommand(getCommand(message), player);
@@ -139,7 +141,7 @@ function runCommand(command, player) {
             room.setPlayerAdmin(player.id, false);
           break;
           case 7:
-            room.sendAnnouncement("Number of players currently in the room [" + (current.players.length) + " / " + maxPlayers + "]", player.id, colors, "small", 1);
+            room.sendAnnouncement("Number of players currently in the room [" + (current.players.length) + " / " + maxPlayers + "]", player.id, colors.sunglow, "small", 1);
           break;
           case 8:
             for (let i = 0; i < current.players.length; i++) {
