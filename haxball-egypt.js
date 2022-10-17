@@ -21,7 +21,7 @@ colors["Caribbean Green"] = 0x04CFAC;
 roles.super = [];
 roles.owner = [];
 roles.owner[0] = {name: "ONN", auth: "XtkMvzsGbxEJJkTiA2Zoff_Hk36asU7e5paWVxDDwNk"};
-commands[0] = {name: "help", id: 1, active: true, permissions: ["User", "Admin", "Super", "Owner"]};
+commands[0] = {name: "help", id: 1, admin: false, active: true, permissions: ["User", "Super", "Owner"]};
 let room = HBInit({
   roomName: roomName,
   password: password,
@@ -32,6 +32,10 @@ let room = HBInit({
   token: token,
   geo: geo,
 });
+
+/*=======================
+  End Of Initialization
+=========================*/
 
 room.onPlayerJoin = function (player) {
   check(player) && (setPlayerRole(player), updateConnList(player, true),
@@ -89,11 +93,22 @@ function getCommand(message) {
 ;
 function runCommand(command, player) {
   let a = command.id;
-  console.log(a)
-  // role
-  if (a == 1) {
-    room.sendAnnouncement(`Commands: ${commands.map(c => prefix + c.name).join(", ")}`, player.id, colors["Caribbean Green"], "small", 1);
+  if (!command.permissions.includes("Owner")) {
+    room.sendAnnouncement("To use this " + prefix + command.name + " command, you must to be: " + command.permissions.join(", "), player.id, colors.error, "small", 2);
+  } else {
+    if (command.admin && !player.admin) {
+      room.sendAnnouncement("You are not an admin.", player.id, colors.error, "small", 2);
+    } else {
+      if (!command.active) {
+        room.sendAnnouncement("This " + prefix + command.name + " command is currently inactive!", player.id, colors.error, "small", 2);
+      } else {
+        if (a == 1) {
+          room.sendAnnouncement(`Commands: ${commands.map(c => prefix + c.name + (c.admin ? "-[admin]" : "")).join(", ")}`, player.id, colors["Caribbean Green"], "small", 1);
+        }
+      }
+    }
   }
+  return false;
 }
 ;
 function alertHelpMessage(player) {
