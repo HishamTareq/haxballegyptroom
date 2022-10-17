@@ -17,7 +17,7 @@ geo.lat = 31.2162;
 geo.lon = 29.9529;
 current.players = [];
 colors["error"] = 0xAC5C5C;
-colors["sunglow"] = 0xffc83d;
+colors["sunglow"] = 0xFFC83D;
 colors["apple"] = 0x5CB85C;
 colors["caribbean green"] = 0x04CFAC;
 roles.super = [];
@@ -30,6 +30,7 @@ commands[3] = {name: "clearbans", id: 4, admin: true, active: true, permissions:
 commands[4] = {name: "admin", id: 5, admin: false, active: true, permissions: ["Super", "Owner"]};
 commands[5] = {name: "waive", id: 6, admin: true, active: true, permissions: ["User", "Super", "Owner"]};
 commands[6] = {name: "nop", id: 7, admin: false, active: true, permissions: ["User", "Super", "Owner"]};
+commands[7] = {name: "kickall", id: 8, admin: true, active: false, permissions: ["Owner"]};
 let room = HBInit({
   roomName: roomName,
   password: password,
@@ -131,12 +132,18 @@ function runCommand(command, player) {
             room.setPlayerAdmin(player.id, false);
           break;
           case 7:
-            room.sendAnnouncement("Number of players currently in the room [" + (current.players.length) + " / " + maxPlayers + "]", player.id, colors.sunglow, "small", 1);
+            room.sendAnnouncement("Number of players currently in the room [" + (current.players.length) + " / " + maxPlayers + "]", player.id, colors, "small", 1);
+          break;
+          case 8:
+            for (let i = 0; i < current.players.length; i++) {
+              if (current.players[i].id == player.id) {
+                continue;
+              } else {
+                kick(player, "Maintenance");
+              }
+            }
           break;
         }
-        // if (a == 1) {
-        //   room.sendAnnouncement(`Commands: ${commands.map(c => prefix + c.name + (c.admin ? "-[admin]" : "")).join(", ")}`, player.id, colors["Caribbean Green"], "small", 1);
-        // }
       }
     }
   }
