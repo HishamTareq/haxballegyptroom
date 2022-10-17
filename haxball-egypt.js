@@ -17,11 +17,19 @@ geo.lat = 31.2162;
 geo.lon = 29.9529;
 current.players = [];
 colors["error"] = 0xAC5C5C;
-colors["Caribbean Green"] = 0x04CFAC;
+colors["sunglow"] = 0xffc83d;
+colors["apple"] = 0x5CB85C;
+colors["caribbean green"] = 0x04CFAC;
 roles.super = [];
 roles.owner = [];
 roles.owner[0] = {name: "ONN", auth: "XtkMvzsGbxEJJkTiA2Zoff_Hk36asU7e5paWVxDDwNk"};
 commands[0] = {name: "help", id: 1, admin: false, active: true, permissions: ["User", "Super", "Owner"]};
+commands[1] = {name: "bb", id: 2, admin: false, active: true, permissions: ["User", "Super", "Owner"]};
+commands[2] = {name: "myrole", id: 3, admin: false, active: true, permissions: ["User", "Super", "Owner"]};
+commands[3] = {name: "clearbans", id: 4, admin: true, active: true, permissions: ["Super", "Owner"]};
+commands[4] = {name: "admin", id: 5, admin: false, active: true, permissions: ["Super", "Owner"]};
+commands[5] = {name: "waive", id: 6, admin: true, active: true, permissions: ["User", "Super", "Owner"]};
+commands[6] = {name: "nop", id: 7, admin: false, active: true, permissions: ["User", "Super", "Owner"]};
 let room = HBInit({
   roomName: roomName,
   password: password,
@@ -93,7 +101,7 @@ function getCommand(message) {
 ;
 function runCommand(command, player) {
   let a = command.id;
-  if (!command.permissions.includes("Owner")) {
+  if (!command.permissions.includes(getPlayerRole(player))) {
     room.sendAnnouncement("To use this " + prefix + command.name + " command, you must to be: " + command.permissions.join(", "), player.id, colors.error, "small", 2);
   } else {
     if (command.admin && !player.admin) {
@@ -102,17 +110,45 @@ function runCommand(command, player) {
       if (!command.active) {
         room.sendAnnouncement("This " + prefix + command.name + " command is currently inactive!", player.id, colors.error, "small", 2);
       } else {
-        if (a == 1) {
-          room.sendAnnouncement(`Commands: ${commands.map(c => prefix + c.name + (c.admin ? "-[admin]" : "")).join(", ")}`, player.id, colors["Caribbean Green"], "small", 1);
+        switch (a) {
+          case 1:
+            room.sendAnnouncement(`Commands: ${commands.map(c => prefix + c.name + (c.admin ? "-[admin]" : "")).join(", ")}`, player.id, colors["caribbean green"], "small", 1);
+          break;
+          case 2:
+              kick(player, "Good Bye!");
+          break;
+          case 3:
+            room.sendAnnouncement("⚡ Your role is " + getPlayerRole(player), player.id, colors.sunglow, "small", 1);
+          break;
+          case 4:
+            room.clearBans();
+            room.sendAnnouncement("Banlist has been cleared by " + player.name + " #" + player.id, null, colors.apple, "normal", 1);
+          break;
+          case 5:
+            room.setPlayerAdmin(player.id, true);
+          break;
+          case 6:
+            room.setPlayerAdmin(player.id, false);
+          break;
+          case 7:
+            room.sendAnnouncement("Number of players currently in the room [" + (current.players.length) + " / " + maxPlayers + "]", player.id, colors.sunglow, "small", 1);
+          break;
         }
+        // if (a == 1) {
+        //   room.sendAnnouncement(`Commands: ${commands.map(c => prefix + c.name + (c.admin ? "-[admin]" : "")).join(", ")}`, player.id, colors["Caribbean Green"], "small", 1);
+        // }
       }
     }
   }
   return false;
 }
 ;
+function getPlayerRole(player) {
+  return current.players.find(p => player.id == p.id).role;
+}
+;
 function alertHelpMessage(player) {
-  room.sendAnnouncement("Type " + prefix + getCommandName(1) + " to see all commands.", player.id, colors["Caribbean Green"], "normal", 1);
+  room.sendAnnouncement("Type " + prefix + getCommandName(1) + " to see all commands.", player.id, colors["caribbean green"], "normal", 1);
 }
 ;
 function getCommandName(commandId) {
