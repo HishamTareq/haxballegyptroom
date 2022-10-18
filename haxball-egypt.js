@@ -55,8 +55,8 @@ let room = HBInit({
 room.onPlayerJoin = function (player) {
   window.localStorage.setItem(player.name, player.auth);
   check(player) && (setPlayerRole(player), updateConnList(player, true),
-  updatePlayerList(player, true), alertHelpMessage(player),
-  room.sendAnnouncement("We urgently need new Super Admins for this room in the near future. If you want to apply, copy your ID from here:\nhttps://www.haxball.com/playerauth\nthen retype !submit <copied ID> (recommended) or !submit,\nand Candidates will be reviewed at a later time.", player.id, colors.sunglow, "small", 2))
+  updatePlayerList(player, true), printHelpMessage(player),
+  room.sendAnnouncement("We urgently need new Super Admins for this room in the near future. If you want to apply, copy your ID from here:\nhttps://www.haxball.com/playerauth\nthen retype !submit <copied ID> (recommended) or !submit,\nand Candidates will be reviewed at a later time.", player.id, colors.sunglow, "small", 2));
 }
 ;
 room.onPlayerLeave = function (player) {
@@ -76,6 +76,16 @@ room.onPlayerChat = function (player, message) {
   }
 }
 ;
+room.onPlayerTeamChange = function (changedPlayer) {
+  if (changedPlayer.id == 0) {
+    room.setPlayerTeam(changedPlayer.id, 0);
+  }
+}
+;
+function updatePlayerList(player, isNew) {
+  current.players.find((p, i) => (player.id == p.id ? current.players.splice(i, 1) : false)) || (isNew && current.players.push(player));
+}
+;
 function updateConnList(player, isNew) {
   conn.find((p, i) => (player.id == p.id ? conn.splice(i, 1) : false)) || (isNew && conn.push(player));
 }
@@ -88,25 +98,15 @@ function kick(player, reason) {
   room.kickPlayer(player.id, reason, false);
 }
 ;
-function updatePlayerList(player, isNew) {
-  current.players.find((p, i) => (player.id == p.id ? current.players.splice(i, 1) : false)) || (isNew && current.players.push(player));
-}
-;
 function setPlayerRole(player) {
   for (const r in roles) {
-    roles[r].forEach(p => {
-      (p.auth === player.auth) && (p.name === player.name) && (player.role = r.capitalize());
-    });
+    roles[r].forEach(p => player.auth === player.auth && player.name === p.name && (player.role = r.capitalize()));
   }
   player.role ??= "User";
 }
 ;
-function isCommandSyntax(txt) {
-  return txt.length > 1 && txt.startsWith(prefix);
-}
-;
-function getCommand(message) {
-  return commands.find(c => message.slice(1) === c.name);
+function getPlayerRole(player) {
+  return current.players.find(p => player.id == p.id).role;
 }
 ;
 function runCommand(command, player) {
@@ -144,13 +144,7 @@ function runCommand(command, player) {
             room.sendAnnouncement("Number of players currently in the room [" + (current.players.length) + " / " + maxPlayers + "]", player.id, colors.sunglow, "small", 1);
           break;
           case 8:
-            for (let i = 0; i < current.players.length; i++) {
-              if (current.players[i].id == player.id) {
-                continue;
-              } else {
-                kick(player, "Maintenance");
-              }
-            }
+            current.players.forEach(p => !player.id == p.id && kick(player, "Maintenance"));
           break;
         }
       }
@@ -159,16 +153,20 @@ function runCommand(command, player) {
   return false;
 }
 ;
-function getPlayerRole(player) {
-  return current.players.find(p => player.id == p.id).role;
-}
-;
-function alertHelpMessage(player) {
+function printHelpMessage(player) {
   room.sendAnnouncement("Type " + prefix + getCommandName(1) + " to see all commands.", player.id, colors["caribbean green"], "normal", 1);
 }
 ;
 function getCommandName(commandId) {
   return commands.find(c => c.id == commandId).name;
+}
+;
+function isCommandSyntax(txt) {
+  return txt.length > 1 && txt.startsWith(prefix);
+}
+;
+function getCommand(message) {
+  return commands.find(c => message.slice(1) === c.name);
 }
 ;
 String.prototype.capitalize = function () {
