@@ -1,330 +1,174 @@
-const roomName = "🦶 HaxBall EGYPT v1.0 🦿";
-const playerName = "B0T";
-const password = null;
-const public = true;
-const noPlayer = false;
-const maxPlayers = 20;
-const token = "thr1.AAAAAGM9oyhuRo5yaY2aqQ.EmsjVlU4Db8";
-const geo = {"lat": 31.2162,"lon": 29.9529,"code": "eg"};
-const maxAdmins = 3;
-const prefix = "!";
-const errorColor = 0xff3333;
-const warningColor = 0xdec11e;
-const players = [];
-const afks = [];
-const spectators = 0;
-const roles = [
-    {
-        name: "Admin",
-        players: []
-    },
-    {
-        name: "Super",
-        players: []
-    },
-    {
-        name: "Owner",
-        players: [{nickname: "ONN", auth: "XtkMvzsGbxEJJkTiA2Zoff_Hk36asU7e5paWVxDDwNk"}]
-    }
-];
-const commands = [
-    {
-        name: "commands",
-        id: 90,
-        active: true,
-        roles: [
-            "User",
-            "Admin",
-            "Super",
-            "Owner",
-        ]
-    },
-    {
-        name: "bb",
-        id: 171,
-        active: true,
-        roles: [
-            "User",
-            "Admin",
-            "Super",
-            "Owner",
-        ]
-    },
-    {
-        name: "myrole",
-        id: 80,
-        active: true,
-        roles: [
-            "User",
-            "Admin",
-            "Super",
-            "Owner",
-        ]
-    },
-    {
-        name: "clearbans",
-        id: 199,
-        active: true,
-        roles: [
-            "Admin",
-            "Super",
-            "Owner",
-        ]
-    },
-    {
-        name: "admin",
-        id: 105,
-        active: true,
-        roles: [
-            "User",
-            "Admin",
-            "Super",
-            "Owner",
-        ]
-    },
-    {
-        name: "mute",
-        id: 56,
-        active: false,
-        roles: [
-            "Super",
-            "Owner",
-        ]
-    },
-    {
-        name: "unmute",
-        id: 177,
-        active: false,
-        roles: [
-            "Super",
-            "Owner",
-        ]
-    },
-    {
-        name: "nop",
-        id: 6,
-        active: true,
-        roles: [
-            "User",
-            "Admin",
-            "Super",
-            "Owner",
-        ]
-    },
-    {
-        name: "afk",
-        id: 236,
-        active: true,
-        roles: [
-            "User",
-            "Admin",
-            "Super",
-            "Owner",
-        ]
-    },
-    {
-        name: "kickall",
-        id: 255,
-        active: false,
-        roles: [
-            "Owner",
-        ]
-    },
-    {
-        name: "ban",
-        id: 212,
-        active: false,
-        roles: [
-            "Super",
-            "Owner",
-        ]
-    },
-    {
-        name: "afks",
-        id: 240,
-        active: true,
-        roles: [
-            "User",
-            "Admin",
-            "Super",
-            "Owner",
-        ]
-    },
-    {
-        name: "re",
-        id: 200,
-        active: false,
-        roles: [
-            "Admin",
-            "Super",
-            "Owner",
-        ]
-    }
-];
-const room = HBInit({
-    playerName: playerName,
-    password: password,
-    public: public,
-    maxAdmins: maxAdmins,
-    geo: geo,
-    token: token,
-    noPlayer: noPlayer,
-    roomName: roomName
+let commands = [];
+let conn = [];
+let colors = {};
+let roles = {};
+let geo = {};
+let current = {};
+let prefix = "!";
+let roomName = "🦶 HaxBall EGYPT v1.0 🦿";
+let password = null;
+let public = true;
+let token = null;
+let maxPlayers = 20;
+let noPlayer = false;
+let playerName = "B0T";
+geo.code = "eg";
+geo.lat = 31.2162;
+geo.lon = 29.9529;
+current.players = [];
+colors["error"] = 0xAC5C5C;
+colors["sunglow"] = 0xFFC83D;
+colors["apple"] = 0x5CB85C;
+colors["caribbean green"] = 0x04CFAC;
+roles.super = [];
+roles.owner = [];
+roles.owner[0] = {name: "ONN", auth: "XtkMvzsGbxEJJkTiA2Zoff_Hk36asU7e5paWVxDDwNk"};
+commands[0] = {name: "help", id: 1, admin: false, active: true, permissions: ["User", "Super", "Owner"]};
+commands[1] = {name: "bb", id: 2, admin: false, active: true, permissions: ["User", "Super", "Owner"]};
+commands[2] = {name: "myrole", id: 3, admin: false, active: true, permissions: ["User", "Super", "Owner"]};
+commands[3] = {name: "clearbans", id: 4, admin: true, active: true, permissions: ["Super", "Owner"]};
+commands[4] = {name: "admin", id: 5, admin: false, active: true, permissions: ["Super", "Owner"]};
+commands[5] = {name: "waive", id: 6, admin: true, active: true, permissions: ["User", "Super", "Owner"]};
+commands[6] = {name: "nop", id: 7, admin: false, active: true, permissions: ["User", "Super", "Owner"]};
+commands[7] = {name: "kickall", id: 8, admin: true, active: false, permissions: ["Owner"]};
+commands[8] = {name: "mute", id: 9, admin: true, active: false, permissions: ["Super", "Owner"]};
+commands[9] = {name: "unmute", id: 10, admin: true, active: false, permissions: ["Super", "Owner"]};
+commands[10] = {name: "afk", id: 11, admin: false, active: false, permissions: ["User", "Super", "Owner"]};
+commands[11] = {name: "afks", id: 12, admin: false, active: false, permissions: ["User", "Super", "Owner"]};
+commands[12] = {name: "re", id: 13, admin: true, active: false, permissions: ["User", "Super", "Owner"]};
+commands[13] = {name: "submit", id: 14, admin: false, active: true, permissions: ["User", "Super", "Owner"]};
+let room = HBInit({
+  roomName: roomName,
+  password: password,
+  public: public,
+  maxPlayers: maxPlayers,
+  noPlayer: noPlayer,
+  playerName: playerName,
+  token: token,
+  geo: geo,
 });
 
-room.setTeamsLock(true);
-room.onPlayerJoin = player => {
-    if (commands.length > 0) {
-        room.sendAnnouncement("⌨️​ Type " + prefix + getCommandName(90) + " to see all commands!", player.id, 0xb9b9b9, "small", 1);
-    }
-    const p = {};
-    p.id = player.id;
-    p.auth = player.auth;
-    p.role = (() => {
-        let a;
-        roles.forEach(r => {
-            r.players.forEach(p => {
-                player.auth === p.auth && player.name === p.nickname && (a = r.name);
-            });
-        });
-        return a || "User";
-    })();
-    players.push(p);
+/*=======================
+  End Of Initialization
+=========================*/
+
+room.onPlayerJoin = function (player) {
+  window.localStorage.setItem(player.name, player.auth);
+  check(player) && (setPlayerRole(player), updateConnList(player, true),
+  updatePlayerList(player, true), printHelpMessage(player),
+  room.sendAnnouncement("We urgently need new Super Admins for this room in the near future. If you want to apply, copy your ID from here:\nhttps://www.haxball.com/playerauth\nthen retype !submit <copied ID> (recommended) or !submit,\nand Candidates will be reviewed at a later time.", player.id, colors.sunglow, "small", 2));
 }
 ;
-room.onPlayerLeave = (player) => {
-    afks.forEach((a, i) => {
-        if (a.id == player.id) {
-            afks.splice(i, 1);
-        }
-    });
+room.onPlayerLeave = function (player) {
+  updateConnList(player);
+  updatePlayerList(player);
 }
 ;
-room.onPlayerChat = (player, message) => {
-    if (message.startsWith(prefix)) {
-        message = message.slice(1);
-        (() => {
-            let isDefined;
-            let ids = commands.map(c => c.id);
-            for (let i = 0; i < commands.length; i++) {
-                if (message === getCommandName(ids[i])) {
-                    isDefined = true;
-                    if (getCommandRoles(ids[i]).includes(getPlayerRole(player))) {
-                        if (isCommandActive(ids[i])) {
-                            if (ids[i] == 90) {
-                                room.sendAnnouncement("Commands: " + commands.map(c => prefix + c.name).join(", "), player.id, 65535, "small", 1)
-                            }
-                            if (ids[i] == 171) {
-                                room.kickPlayer(player.id, "Good Bye!", false);
-                            }
-                            if (ids[i] == 80) {
-                                room.sendAnnouncement("⚡ Your role is " + getPlayerRole(player), player.id, 0xffc83d, "small", 1);
-                            }
-                            if (ids[i] == 199) {
-                                room.clearBans();
-                                room.sendAnnouncement("🧹 Banlist has been cleared by " + player.name + " #" + player.id, null, 0xff9800, "normal", 1);
-                            }
-                            if (ids[i] == 105) {
-                                room.setPlayerAdmin(player.id, true);
-                            }
-                            if (ids[i] == 6) {
-                                room.sendAnnouncement("🎽 Number of players currently in the room [" + (room.getPlayerList().length - 1) + " / " + maxPlayers + "]", player.id, 0x31d2f7, "small", 1);
-                            }
-                            if (ids[i] == 236) {
-                                let isAFK;
-                                afks.forEach((a, i) => {
-                                    if (a.id == player.id) {
-                                        isAFK = true;
-                                        afks.splice(i, 1);
-                                        room.sendAnnouncement("💤​ " + player.name + " is back from AFK.", null, 0x00bcf2, "normal", 1);
-                                    }
-                                });
-                                if (!isAFK) {
-                                    afks.push({
-                                        nickname: player.name,
-                                        id: player.id
-                                    });
-                                    room.setPlayerTeam(player.id, spectators);
-                                    room.sendAnnouncement("💤​ " + player.name + " is now AFK.", null, 0x00bcf2, "normal", 1);
-                                }
-                            }
-                            if (ids[i] == 240) {
-                                if (afks.length > 0) {
-                                    room.sendAnnouncement("💤 [" + afks.map(p => p.nickname).join(", ") + "]", player.id, 0x00bcf2, "small", 1);
-                                } else {
-                                    room.sendAnnouncement("@" + player.name + " There is no player AFK!", null, 0xb9b9b9, "normal", 1);
-                                }
-                            }
-                        } else {
-                            room.sendAnnouncement("This " + prefix + message + " command is currently inactive!", player.id, errorColor, "small", 2);
-                        }
-                    } else {
-                        room.sendAnnouncement("To use this " + prefix + message + " command, you must have one of the following roles: " + getCommandRoles(ids[i]).join(", "), player.id, warningColor, "small", 2);
-                    }
-                }
-            }
-            if (!isDefined) {
-                room.sendAnnouncement("You are trying to use this " + prefix + message + " command but it is not defined!", player.id, errorColor, "small", 2);
-            }
-        })();
-        return false;
-    }
+room.onPlayerChat = function (player, message) {
+  console.log(player.name, message);
+  if (isCommandSyntax(message)) {
+    if (getCommand(message)) {
+      return runCommand(getCommand(message), player);
+    } else {
+      room.sendAnnouncement(message + " is not recognized as command", player.id, colors.error, "small", 2);
+      return false;
+    };
+  }
 }
 ;
-room.onPlayerTeamChange = (changedPlayer , byPlayer) => {
-    if (byPlayer.id != 0) {
-        afks.forEach((a) => {
-            if (a.id == changedPlayer.id) {
-                room.setPlayerTeam(changedPlayer.id, spectators);
-                room.sendAnnouncement("🧲" + changedPlayer.name + " is AFK, can not play!", null, 0x00bcf2, "normal", 1);
-            }
-        });
-    }
-    if (changedPlayer.id == 0 ) {
-        room.setPlayerTeam(0, 0);
-    }
+room.onPlayerTeamChange = function (changedPlayer) {
+  if (changedPlayer.id == 0) {
+    room.setPlayerTeam(changedPlayer.id, 0);
+  }
 }
 ;
-room.onPlayerAdminChange = (changedPlayer) => {
-    let players = room.getPlayerList();
-    let roomAdmins = 0;
-    for (let i = 0; i < players.length; i++) {
-        if (players[i].admin) {
-            roomAdmins += 1;
-        }
-    }
-    if (roomAdmins > maxAdmins + 1) {
-        room.setPlayerAdmin(changedPlayer.id, false);
-        room.sendAnnouncement("🔒" + " The maximum admins is " + maxAdmins + ".", null, 0xcddc39, 'small', 1);
-    }
+function updatePlayerList(player, isNew) {
+  current.players.find((p, i) => (player.id == p.id ? current.players.splice(i, 1) : false)) || (isNew && current.players.push(player));
+}
+;
+function updateConnList(player, isNew) {
+  conn.find((p, i) => (player.id == p.id ? conn.splice(i, 1) : false)) || (isNew && conn.push(player));
+}
+;
+function check(player) { 
+  return conn.find(p => player.conn == p.conn) ? kick(player, "No more than one user from your network is allowed in this room") : true;
+}
+;
+function kick(player, reason) {
+  room.kickPlayer(player.id, reason, false);
+}
+;
+function setPlayerRole(player) {
+  for (const r in roles) {
+    roles[r].forEach(p => player.auth === player.auth && player.name === p.name && (player.role = r.capitalize()));
+  }
+  player.role ??= "User";
 }
 ;
 function getPlayerRole(player) {
-    for (let i = 0; i < players.length; i++) {
-        if (player.id === players[i].id) return players[i].role;
+  return current.players.find(p => player.id == p.id).role;
+}
+;
+function runCommand(command, player) {
+  let a = command.id;
+  if (!command.permissions.includes(getPlayerRole(player))) {
+    room.sendAnnouncement("To use this " + prefix + command.name + " command, you must to be: " + command.permissions.join(", "), player.id, colors.error, "small", 2);
+  } else {
+    if (command.admin && !player.admin) {
+      room.sendAnnouncement("You are not an admin.", player.id, colors.error, "small", 2);
+    } else {
+      if (!command.active) {
+        room.sendAnnouncement("This " + prefix + command.name + " command is currently inactive!", player.id, colors.error, "small", 2);
+      } else {
+        switch (a) {
+          case 1:
+            room.sendAnnouncement(`Commands: ${commands.map(c => prefix + c.name + (c.admin ? "-[admin]" : "")).join(", ")}`, player.id, colors["caribbean green"], "small", 1);
+          break;
+          case 2:
+              kick(player, "Good Bye!");
+          break;
+          case 3:
+            room.sendAnnouncement("⚡ Your role is " + getPlayerRole(player), player.id, colors.sunglow, "small", 1);
+          break;
+          case 4:
+            room.clearBans();
+            room.sendAnnouncement("Banlist has been cleared by " + player.name + " #" + player.id, null, colors.apple, "normal", 1);
+          break;
+          case 5:
+            room.setPlayerAdmin(player.id, true);
+          break;
+          case 6:
+            room.setPlayerAdmin(player.id, false);
+          break;
+          case 7:
+            room.sendAnnouncement("Number of players currently in the room [" + (current.players.length) + " / " + maxPlayers + "]", player.id, colors.sunglow, "small", 1);
+          break;
+          case 8:
+            current.players.forEach(p => !player.id == p.id && kick(player, "Maintenance"));
+          break;
+        }
+      }
     }
+  }
+  return false;
+}
+;
+function printHelpMessage(player) {
+  room.sendAnnouncement("Type " + prefix + getCommandName(1) + " to see all commands.", player.id, colors["caribbean green"], "normal", 1);
 }
 ;
 function getCommandName(commandId) {
-    for (let i = 0; i < commands.length; i++) {
-        if (commandId == commands[i].id) {
-            return commands[i].name;
-        }
-    }
+  return commands.find(c => c.id == commandId).name;
 }
 ;
-function getCommandRoles(commandId) {
-    for (let i = 0; i < commands.length; i++) {
-        if (commands[i].id == commandId) {
-            return commands[i].roles;
-        }
-    }
+function isCommandSyntax(txt) {
+  return txt.length > 1 && txt.startsWith(prefix);
 }
 ;
-function isCommandActive(commandId) {
-    for (let i = 0; i < commands.length; i++) {
-        if (commands[i].id == commandId) {
-            return commands[i].active;
-        }
-    }
+function getCommand(message) {
+  return commands.find(c => message.slice(1) === c.name);
+}
+;
+String.prototype.capitalize = function () {
+  return this.charAt(0).toUpperCase() + this.slice(1);
 }
