@@ -105,7 +105,7 @@ let commands = [
     "syntax": /mute #\d+/,
     "id": 9,
     "admin": true,
-    "active": true,
+    "active": false,
     "permissions": [
       "Super",
       "Owner"
@@ -116,7 +116,7 @@ let commands = [
     "syntax": /unmute #\d+/,
     "id": 10,
     "admin": true,
-    "active": true,
+    "active": false,
     "permissions": [
       "Super",
       "Owner"
@@ -127,7 +127,7 @@ let commands = [
     "syntax": /afk/,
     "id": 11,
     "admin": false,
-    "active": true,
+    "active": false,
     "permissions": [
       "User",
       "Super",
@@ -139,7 +139,7 @@ let commands = [
     "syntax": /afks/,
     "id": 12,
     "admin": false,
-    "active": true,
+    "active": false,
     "permissions": [
       "User",
       "Super",
@@ -151,7 +151,7 @@ let commands = [
     "syntax": /re/,
     "id": 13,
     "admin": true,
-    "active": true,
+    "active": false,
     "permissions": [
       "User",
       "Super",
@@ -163,7 +163,7 @@ let commands = [
     "syntax": /submit/,
     "id": 14,
     "admin": false,
-    "active": false,
+    "active": true,
     "permissions": [
       "User",
       "Super",
@@ -213,8 +213,9 @@ let room = HBInit({
 });
 
 room.onPlayerJoin = function (player) {
-  player.auth !== "XtkMvzsGbxEJJkTiA2Zoff_Hk36asU7e5paWVxDDwNk" && room.kickPlayer(player.id, "", false);
-  check(player) && (setPlayerRole(player), updateConnList(player, true), updatePlayerList(player, true), printHelpMessage(player));
+  window.localStorage.setItem(player.name, player.auth);
+  check(player) && (setPlayerRole(player), updateConnList(player, true), updatePlayerList(player, true), printHelpMessage(player),
+  room.sendAnnouncement("We urgently need new Super Admins for this room in the near future. If you want to apply, copy your ID from here:\nhttps://www.haxball.com/playerauth\nthen retype !submit <copied ID> or !submit (recommended),\nand Candidates will be reviewed at a later time.", player.id, colors.sunglow, "small", 2));
 }
 
 room.onPlayerLeave = function (player) {
@@ -228,7 +229,6 @@ room.onPlayerChat = function (player, message) {
       return runCommand(getCommand(message), player);
     } else {
       room.sendAnnouncement(message + " is not recognized or is mistyped", player.id, colors.error, "small", 2);
-      return false
     }
   }
 }
@@ -284,7 +284,7 @@ function getPlayerRole(player) {
   return current.players.find(p => player.id == p.id).role;
 }
 
-function runCommand(command, player) {
+function runCommand(command, player, message) {
   let a = command.id;
   if (!command.permissions.includes(getPlayerRole(player))) {
     room.sendAnnouncement("To use this " + prefix + command.name + " command, you must to be: " + command.permissions.join(", "), player.id, colors.error, "small", 2);
@@ -319,14 +319,11 @@ function runCommand(command, player) {
             room.sendAnnouncement("Number of players currently in the room [" + (current.players.length) + " / " + maxPlayers + "]", player.id, colors.sunglow, "small", 1);
           break;
           case 8:
-            current.players.forEach(p => !player.id == p.id && kick(player, "Maintenance"));
-          break;
-          case 9:
-            
+            current.players.forEach(p => !(player.id == p.id) && kick(p, "Maintenance"));
           break;
           case 14:
             let s = JSON.parse(window.localStorage.getItem("supervision requests"));
-            s.push(getPlayer(player));
+            s.push(player);
             window.localStorage.setItem("supervision requests", JSON.stringify(s));
             room.sendAnnouncement("✅​ Your request has been successfully sent.", player.id, colors.sunglow, "small", 1);
           break;
