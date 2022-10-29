@@ -6,6 +6,12 @@ const MATCH_MINUTES = 3;
 
 const MATCH_SCORES = 3;
 
+const SPECTATOR = 0;
+
+const RED = 1;
+
+const BLUE = 2;
+
 const TEAMS_LOCK = true;
 
 const AFKS = [];
@@ -178,6 +184,11 @@ ROOM.onPlayerChat = function(a, b) {
         ROOM.sendAnnouncement(b + " is not recognized or is mistyped", a.id, COLORS.error, "small", 2);
         return false;
     }
+};
+
+ROOM.onPlayerTeamChange = function(a) {
+    if (0 == a.id) ROOM.setPlayerTeam(0, 0);
+    if (a.team == SPECTATOR) ROOM.sendChat("Don't be stupid, How can I play while I'm a Bot ?", null);
 };
 
 function isCommandPrefix(a) {
