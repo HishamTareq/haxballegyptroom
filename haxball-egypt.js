@@ -173,13 +173,11 @@ ROOM.setScoreLimit(MATCH_SCORES);
 ROOM.setTimeLimit(MATCH_MINUTES);
 
 ROOM.onPlayerJoin = function(a) {
-    if (check(a)) ROOM.kickPlayer(a.id, "The maximum number of players from the same network is 1.", false); else {
-        setPlayerRole(a);
-        updateConnList(a, true);
-        updatePlayerList(a, true);
-        printHelpMessage(a);
-        updateAdmin();
-    }
+    setPlayerRole(a);
+    updateConnList(a, true);
+    updatePlayerList(a, true);
+    printHelpMessage(a);
+    updateAdmin();
 };
 
 ROOM.onPlayerLeave = function(a) {
@@ -290,10 +288,10 @@ function runCommand(a, b, c) {
     return false;
 }
 
-function updateAdmin(a) {
-    if (!PLAYERS.find(function(a) {
-        return a.admin;
-    })) ROOM.setPlayerAdmin(PLAYERS[PLAYERS.length - 1].id, true);
+function updateAdmin() {
+    if (!ROOM.getPlayerList().find(function(a) {
+        return a.admin && 0 != a.id;
+    })) if (PLAYERS[PLAYERS.length - 1]) ROOM.setPlayerAdmin(PLAYERS[PLAYERS.length - 1].id, true);
 }
 
 String.prototype.capitalize = function() {
