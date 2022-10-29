@@ -140,8 +140,15 @@ const COMMANDS = [ {
     syntax: /submit/,
     id: 14,
     admin: false,
-    active: true,
+    active: false,
     permissions: [ "User", "Super", "Owner" ]
+}, {
+    name: "toTop",
+    syntax: /toTop #\d+/,
+    id: 15,
+    admin: false,
+    active: false,
+    permissions: [ "Super", "Owner" ]
 } ];
 
 const ROOM = new HBInit(Object.assign(CONFIG, {
@@ -151,7 +158,7 @@ const ROOM = new HBInit(Object.assign(CONFIG, {
     token: null,
     "public": true,
     noPlayer: false,
-    maxPlayers: null,
+    maxPlayers: 15,
     geo: {
         lat: 31.2162,
         lon: 29.9529,
@@ -166,17 +173,19 @@ ROOM.setScoreLimit(MATCH_SCORES);
 ROOM.setTimeLimit(MATCH_MINUTES);
 
 ROOM.onPlayerJoin = function(a) {
-    if (check(a)) ROOM.kickPlayer(a.id, "No more than one user from your network is allowed in this room", false); else {
+    if (check(a)) ROOM.kickPlayer(a.id, "The maximum number of players from the same network is 1.", false); else {
         setPlayerRole(a);
         updateConnList(a, true);
         updatePlayerList(a, true);
         printHelpMessage(a);
+        updateAdmin();
     }
 };
 
 ROOM.onPlayerLeave = function(a) {
     updateConnList(a);
     updatePlayerList(a);
+    updateAdmin();
 };
 
 ROOM.onPlayerChat = function(a, b) {
@@ -188,7 +197,10 @@ ROOM.onPlayerChat = function(a, b) {
 
 ROOM.onPlayerTeamChange = function(a) {
     if (0 == a.id) ROOM.setPlayerTeam(0, 0);
-    if (a.team == SPECTATOR) ROOM.sendChat("Don't be stupid, How can I play while I'm a Bot ?", null);
+    if (a.team == SPECTATOR && 0 == a.id) {
+        ROOM.reorderPlayers([ 0 ], true);
+        ROOM.sendChat("Don't be stupid, How can I play while I'm a Bot ?", null);
+    }
 };
 
 function isCommandPrefix(a) {
@@ -276,6 +288,12 @@ function runCommand(a, b, c) {
         });
     }
     return false;
+}
+
+function updateAdmin(a) {
+    if (!PLAYERS.find(function(a) {
+        return a.admin;
+    })) ROOM.setPlayerAdmin(PLAYERS[PLAYERS.length - 1].id, true);
 }
 
 String.prototype.capitalize = function() {
