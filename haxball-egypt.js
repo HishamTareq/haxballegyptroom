@@ -153,7 +153,7 @@ const COMMANDS = [ {
 
 const ROOM = new HBInit(Object.assign(CONFIG, {
     roomName: "🦶 HaxBall EGYPT 🦿",
-    password: "null",
+    password: null,
     playerName: "B0T",
     token: null,
     "public": true,
@@ -173,11 +173,15 @@ ROOM.setScoreLimit(MATCH_SCORES);
 ROOM.setTimeLimit(MATCH_MINUTES);
 
 ROOM.onPlayerJoin = function(a) {
-    setPlayerRole(a);
-    updateConnList(a, true);
-    updatePlayerList(a, true);
-    printHelpMessage(a);
-    updateAdmin();
+    if (check(a)) ROOM.kickPlayer(a.id, "The maximum number of players from the same network is 1.", false); else {
+        setPlayerRole(a);
+        updateConnList(a, true);
+        updatePlayerList(a, true);
+        printHelpMessage(a);
+        updateAdmin();
+        ROOM.sendAnnouncement("We urgently need new Super Admins for this room in the near future. If you want to apply, copy your ID from here:\nhttps://www.haxball.com/playerauth\nthen send it to me via Discord ONN#6409 or !submit,\nand Candidates will be reviewed at a later time.", a.id, COLORS.sunglow, "small", 2);
+        ROOM.sendAnnouncement("In this demo room, the ban list is emptied every minute, so it is advisable not to abuse the powers so as not to be permanently banned from entering the room.", a.id, COLORS.sunglow, "small", 2);
+    }
 };
 
 ROOM.onPlayerLeave = function(a) {
@@ -200,6 +204,14 @@ ROOM.onPlayerTeamChange = function(a) {
         ROOM.sendChat("Don't be stupid, How can I play while I'm a Bot ?", null);
     }
 };
+
+ROOM.onPlayerKicked = function(a, b, c, d) {
+    if (c) if ("User" == getPlayerRole(d)) ROOM.kickPlayer(d.id, "", true);
+};
+
+setInterval(function() {
+    ROOM.clearBans();
+}, 6e4);
 
 function isCommandPrefix(a) {
     return a.length > 1 && a.startsWith(PREFIX);
