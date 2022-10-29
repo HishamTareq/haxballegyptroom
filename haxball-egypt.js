@@ -193,7 +193,6 @@ function check(a) {
 function setPlayerRole(a) {
     for (var b in ROLES) for (var c = 0; c < ROLES[b].length; c++) if (a.auth === ROLES[b][c].auth && a.name === ROLES[b][c].name) a.role = b.capitalize();
     if (void 0 === a.role) a.role = "User";
-    console.log(a.role);
 }
 
 function updateConnList(a, b) {
@@ -228,11 +227,8 @@ function getCommandName(a) {
 
 function runCommand(a, b, c) {
     const d = a.id;
-    console.log(b);
-    console.log(a);
     if (!a.permissions.includes(getPlayerRole(b))) ROOM.sendAnnouncement("To use this " + PREFIX + a.name + " command, you must to be: " + a.permissions.join(", "), b.id, COLORS.error, "small", 2); else if (a.admin && !b.admin) ROOM.sendAnnouncement("You are not an admin.", b.id, COLORS.error, "small", 2); else if (!a.active) ROOM.sendAnnouncement("This " + PREFIX + a.name + " command is currently inactive!", b.id, COLORS.error, "small", 2); else switch (d) {
       case 1:
-        console.log(true);
         ROOM.sendAnnouncement("Commands: " + COMMANDS.map(function(a) {
             return PREFIX + a.name + (a.admin ? "-[admin]" : "");
         }).join(", "), b.id, COLORS["caribbean green"], "small", 1);
