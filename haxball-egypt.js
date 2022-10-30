@@ -1,7 +1,5 @@
 const PREFIX = "!";
 
-const MAX_ADMINS = 4;
-
 const MATCH_MINUTES = 3;
 
 const MATCH_SCORES = 3;
@@ -14,12 +12,6 @@ const BLUE = 2;
 
 const TEAMS_LOCK = true;
 
-const AFKS = [];
-
-const BANS = [];
-
-const MUTES = [];
-
 const PLAYERS = [];
 
 const CONNS = [];
@@ -30,7 +22,8 @@ const COLORS = {
     error: 11295836,
     sunglow: 16762941,
     apple: 6076508,
-    "caribbean green": 315308
+    "caribbean green": 315308,
+    Razzmatazz: 2025892
 };
 
 const ROLES = {
@@ -59,15 +52,15 @@ const COMMANDS = [ {
     active: true,
     permissions: [ "User", "Super", "Owner" ]
 }, {
-    name: "myrole",
-    syntax: /myrole/,
+    name: "myRole",
+    syntax: /myRole/,
     id: 3,
     admin: false,
     active: true,
     permissions: [ "User", "Super", "Owner" ]
 }, {
-    name: "clearbans",
-    syntax: /clearbans/,
+    name: "clearBans",
+    syntax: /clearBans/,
     id: 4,
     admin: true,
     active: true,
@@ -94,11 +87,11 @@ const COMMANDS = [ {
     active: true,
     permissions: [ "User", "Super", "Owner" ]
 }, {
-    name: "kickall",
-    syntax: /kickall/,
+    name: "kickAll",
+    syntax: /kickAll/,
     id: 8,
     admin: true,
-    active: false,
+    active: true,
     permissions: [ "Owner" ]
 }, {
     name: "mute",
@@ -133,7 +126,7 @@ const COMMANDS = [ {
     syntax: /re/,
     id: 13,
     admin: true,
-    active: false,
+    active: true,
     permissions: [ "User", "Super", "Owner" ]
 }, {
     name: "submit",
@@ -147,8 +140,8 @@ const COMMANDS = [ {
     syntax: /toTop #\d+/,
     id: 15,
     admin: false,
-    active: false,
-    permissions: [ "Super", "Owner" ]
+    active: true,
+    permissions: [ "Super", "User", "Owner" ]
 } ];
 
 const ROOM = new HBInit(Object.assign(CONFIG, {
@@ -180,7 +173,7 @@ ROOM.onPlayerJoin = function(a) {
         printHelpMessage(a);
         updateAdmin();
         ROOM.sendAnnouncement("We urgently need new Super Admins for this room in the near future. If you want to apply, copy your ID from here:\nhttps://www.haxball.com/playerauth\nthen send it to me via Discord ONN#6409 or !submit,\nand Candidates will be reviewed at a later time.", a.id, COLORS.sunglow, "small", 2);
-        ROOM.sendAnnouncement("In this demo room, the ban list is emptied every minute, so it is advisable not to abuse the powers so as not to be permanently banned from entering the room.", a.id, COLORS.sunglow, "small", 2);
+        ROOM.sendAnnouncement("In this demo room, The ban list is emptied every minute, so it is advisable not to abuse the powers so as not to be permanently banned from entering the room.", a.id, COLORS.sunglow, "small", 2);
     }
 };
 
@@ -191,7 +184,7 @@ ROOM.onPlayerLeave = function(a) {
 };
 
 ROOM.onPlayerChat = function(a, b) {
-    if (isCommandPrefix(b)) if (getCommand(b)) return runCommand(getCommand(b), a); else {
+    if (isCommandPrefix(b)) if (getCommand(b)) return runCommand(getCommand(b), a, b); else {
         ROOM.sendAnnouncement(b + " is not recognized or is mistyped", a.id, COLORS.error, "small", 2);
         return false;
     }
@@ -205,8 +198,11 @@ ROOM.onPlayerTeamChange = function(a) {
     }
 };
 
-ROOM.onPlayerKicked = function(a, b, c, d) {
-    if (c) if ("User" == getPlayerRole(d)) ROOM.kickPlayer(d.id, "", true);
+ROOM.onPlayerKicked = function(a, a, b, c) {
+    if (b) if ("User" == getPlayerRole(c)) {
+        console.log(3);
+        ROOM.kickPlayer(c.id, "", true);
+    }
 };
 
 setInterval(function() {
@@ -247,9 +243,10 @@ function getCommand(a) {
 }
 
 function getPlayerRole(a) {
-    return PLAYERS.find(function(b) {
+    const b = PLAYERS.find(function(b) {
         return a.id == b.id;
-    }).role;
+    });
+    if (b) return b.role;
 }
 
 function getCommandName(a) {
@@ -296,8 +293,30 @@ function runCommand(a, b, c) {
         PLAYERS.forEach(function(a) {
             if (!(b.id == a.id)) ROOM.kickPlayer(a.id, "Maintenance", false);
         });
+        break;
+
+      case 13:
+        if (b.team == RED || b.team == BLUE) {
+            ROOM.stopGame();
+            ROOM.startGame();
+        }
+        break;
+
+      case 15:
+        const e = c.slice(8);
+        const f = getPlayer(e);
+        if (0 != e) if (f) {
+            ROOM.reorderPlayers([ 0, +e ], true);
+            ROOM.sendAnnouncement("💨 " + f.name + ", moved to top by " + b.name, null, COLORS.Razzmatazz, "small", 1);
+        }
     }
     return false;
+}
+
+function getPlayer(a) {
+    return PLAYERS.find(function(b) {
+        return b.id == a;
+    });
 }
 
 function updateAdmin() {
