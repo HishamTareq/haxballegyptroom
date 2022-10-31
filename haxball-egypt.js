@@ -10,7 +10,7 @@ const RED = 1;
 
 const BLUE = 2;
 
-const TEAMS_LOCK = true;
+const TEAMS_LOCK = !0;
 
 const PLAYERS = [];
 
@@ -141,7 +141,7 @@ const COMMANDS = [ {
     id: 15,
     admin: false,
     active: true,
-    permissions: [ "Super", "User", "Owner" ]
+    permissions: [ "Super", "Owner" ]
 } ];
 
 const ROOM = new HBInit(Object.assign(CONFIG, {
@@ -149,8 +149,8 @@ const ROOM = new HBInit(Object.assign(CONFIG, {
     password: null,
     playerName: "B0T",
     token: null,
-    "public": true,
-    noPlayer: false,
+    "public": !0,
+    noPlayer: !1,
     maxPlayers: 15,
     geo: {
         lat: 31.2162,
@@ -165,15 +165,17 @@ ROOM.setScoreLimit(MATCH_SCORES);
 
 ROOM.setTimeLimit(MATCH_MINUTES);
 
+setInterval(function() {
+    ROOM.clearBans();
+}, 6e4);
+
 ROOM.onPlayerJoin = function(a) {
-    if (check(a)) ROOM.kickPlayer(a.id, "The maximum number of players from the same network is 1.", false); else {
+    if (check(a)) ROOM.kickPlayer(a.id, "The maximum number of players from the same network is (1)", !1); else {
         setPlayerRole(a);
-        updateConnList(a, true);
-        updatePlayerList(a, true);
-        printHelpMessage(a);
+        updateConnList(a, !0);
+        updatePlayerList(a, !0);
+        printTipMessage(a);
         updateAdmin();
-        ROOM.sendAnnouncement("We urgently need new Super Admins for this room in the near future. If you want to apply, copy your ID from here:\nhttps://www.haxball.com/playerauth\nthen send it to me via Discord ONN#6409 or !submit,\nand Candidates will be reviewed at a later time.", a.id, COLORS.sunglow, "small", 2);
-        ROOM.sendAnnouncement("In this demo room, The ban list is emptied every minute, so it is advisable not to abuse the powers so as not to be permanently banned from entering the room.", a.id, COLORS.sunglow, "small", 2);
     }
 };
 
@@ -186,28 +188,20 @@ ROOM.onPlayerLeave = function(a) {
 ROOM.onPlayerChat = function(a, b) {
     if (isCommandPrefix(b)) if (getCommand(b)) return runCommand(getCommand(b), a, b); else {
         ROOM.sendAnnouncement(b + " is not recognized or is mistyped", a.id, COLORS.error, "small", 2);
-        return false;
+        return !1;
     }
 };
 
 ROOM.onPlayerTeamChange = function(a) {
-    if (0 == a.id) ROOM.setPlayerTeam(0, 0);
-    if (a.team == SPECTATOR && 0 == a.id) {
-        ROOM.reorderPlayers([ 0 ], true);
-        ROOM.sendChat("Don't be stupid, How can I play while I'm a Bot ?", null);
+    if (0 == a.id) {
+        ROOM.setPlayerTeam(0, SPECTATOR);
+        ROOM.reorderPlayers([ 0 ], !0);
     }
 };
 
-ROOM.onPlayerKicked = function(a, a, b, c) {
-    if (b) if ("User" == getPlayerRole(c)) {
-        console.log(3);
-        ROOM.kickPlayer(c.id, "", true);
-    }
+ROOM.onPlayerKicked = function(a, b, c, d) {
+    if (c && "User" == getPlayerRole(d)) ROOM.kickPlayer(d.id, "", !0);
 };
-
-setInterval(function() {
-    ROOM.clearBans();
-}, 6e4);
 
 function isCommandPrefix(a) {
     return a.length > 1 && a.startsWith(PREFIX);
@@ -232,7 +226,8 @@ function updatePlayerList(a, b) {
     if (b) PLAYERS.push(a); else for (var c = 0; c < PLAYERS.length; c++) if (a.id == PLAYERS[c].id) PLAYERS.splice(c, 1);
 }
 
-function printHelpMessage(a) {
+function printTipMessage(a) {
+    ROOM.sendAnnouncement("In this demo room, The ban list is emptied every minute, so it is advisable not to abuse the powers so as not to be permanently banned from entering the room.", a.id, COLORS.sunglow, "small", 2);
     ROOM.sendAnnouncement("Type " + PREFIX + getCommandName(1) + " to see all commands.", a.id, COLORS["caribbean green"], "normal", 1);
 }
 
@@ -265,7 +260,7 @@ function runCommand(a, b, c) {
         break;
 
       case 2:
-        ROOM.kickPlayer(b.id, "Good Bye!", false);
+        ROOM.kickPlayer(b.id, "Good Bye!", !1);
         break;
 
       case 3:
@@ -278,11 +273,11 @@ function runCommand(a, b, c) {
         break;
 
       case 5:
-        ROOM.setPlayerAdmin(b.id, true);
+        ROOM.setPlayerAdmin(b.id, !0);
         break;
 
       case 6:
-        ROOM.setPlayerAdmin(b.id, false);
+        ROOM.setPlayerAdmin(b.id, !1);
         break;
 
       case 7:
@@ -291,7 +286,7 @@ function runCommand(a, b, c) {
 
       case 8:
         PLAYERS.forEach(function(a) {
-            if (!(b.id == a.id)) ROOM.kickPlayer(a.id, "Maintenance", false);
+            if (!(b.id == a.id)) ROOM.kickPlayer(a.id, "Maintenance", !1);
         });
         break;
 
@@ -306,11 +301,11 @@ function runCommand(a, b, c) {
         const e = c.slice(8);
         const f = getPlayer(e);
         if (0 != e) if (f) {
-            ROOM.reorderPlayers([ 0, +e ], true);
+            ROOM.reorderPlayers([ 0, +e ], !0);
             ROOM.sendAnnouncement("💨 " + f.name + ", moved to top by " + b.name, null, COLORS.Razzmatazz, "small", 1);
         }
     }
-    return false;
+    return !1;
 }
 
 function getPlayer(a) {
@@ -322,7 +317,7 @@ function getPlayer(a) {
 function updateAdmin() {
     if (!ROOM.getPlayerList().find(function(a) {
         return a.admin && 0 != a.id;
-    })) if (PLAYERS[PLAYERS.length - 1]) ROOM.setPlayerAdmin(PLAYERS[PLAYERS.length - 1].id, true);
+    })) if (PLAYERS[PLAYERS.length - 1]) ROOM.setPlayerAdmin(PLAYERS[PLAYERS.length - 1].id, !0);
 }
 
 String.prototype.capitalize = function() {
