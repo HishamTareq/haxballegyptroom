@@ -145,7 +145,7 @@ const COMMANDS = [ {
 } ];
 
 const ROOM = new HBInit(Object.assign(CONFIG, {
-    roomName: "🦶 HaxBall EGYPT 🦿",
+    roomName: "👾 HaxBall Eُgypt v1.1.0 🧛",
     password: null,
     playerName: "B0T",
     token: null,
