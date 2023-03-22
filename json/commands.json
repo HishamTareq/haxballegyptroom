@@ -6,6 +6,10 @@
       "name": "help",
       "active": false,
       "admin": null,
+      "syntax": {
+        "pattern": "^ *prefix *(help|commands) *$",
+        "flags": "i"
+      },
       "permissions": {
         "everyone": true,
         "super": true,
