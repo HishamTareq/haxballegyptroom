@@ -3,7 +3,7 @@
   "password": null,
   "playerName": null,
   "roomName": null,
-  "noPlayer": false,
+  "noPlayer": true,
   "public": false,
   "maxPlayers": 4,
   "geo": {
