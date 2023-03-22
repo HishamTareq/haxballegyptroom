@@ -1,5 +1,5 @@
 {
   "teamsLock": true,
-  "muteChat": true,
-  "recaptcha": true
+  "muteChat": false,
+  "recaptcha": false
 }
