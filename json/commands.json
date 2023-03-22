@@ -1,0 +1,137 @@
+{
+  "prefix": "!",
+  "list": [
+    {
+      "id": 1,
+      "name": "help",
+      "active": false,
+      "admin": null,
+      "permissions": {
+        "everyone": true,
+        "super": true,
+        "owner": true
+      }
+    },
+    {
+      "id": 2,
+      "name": "bb",
+      "active": false,
+      "admin": null,
+      "permissions": {
+        "everyone": true,
+        "super": true,
+        "owner": true
+      }
+    },
+    {
+      "id": 3,
+      "name": "afk",
+      "active": false,
+      "admin": null,
+      "permissions": {
+        "everyone": true,
+        "super": true,
+        "owner": true
+      }
+    },
+    {
+      "id": 4,
+      "name": "afks",
+      "active": false,
+      "admin": null,
+      "permissions": {
+        "everyone": true,
+        "super": true,
+        "owner": true
+      }
+    },
+    {
+      "id": 5,
+      "name": "pm",
+      "active": false,
+      "admin": null,
+      "permissions": {
+        "everyone": true,
+        "super": true,
+        "owner": true
+      }
+    },
+    {
+      "id": 6,
+      "name": "resign",
+      "active": false,
+      "admin": true,
+      "permissions": {
+        "everyone": true,
+        "super": true,
+        "owner": true
+      }
+    },
+    {
+      "id": 7,
+      "name": "admin",
+      "active": false,
+      "admin": false,
+      "permissions": {
+        "everyone": false,
+        "super": true,
+        "owner": true
+      }
+    },
+    {
+      "id": 8,
+      "name": "clearbans",
+      "active": false,
+      "admin": true,
+      "permissions": {
+        "everyone": true,
+        "super": true,
+        "owner": true
+      }
+    },
+    {
+      "id": 9,
+      "name": "kickafks",
+      "active": false,
+      "admin": true,
+      "permissions": {
+        "everyone": true,
+        "super": true,
+        "owner": true
+      }
+    },
+    {
+      "id": 10,
+      "name": "res",
+      "active": false,
+      "admin": true,
+      "permissions": {
+        "everyone": true,
+        "super": true,
+        "owner": true
+      }
+    },
+    {
+      "id": 11,
+      "name": "recaptcha",
+      "active": false,
+      "admin": null,
+      "permissions": {
+        "everyone": false,
+        "super": true,
+        "owner": true
+      }
+    },
+    {
+      "id": 12,
+      "name": "shutdown",
+      "active": false,
+      "admin": null,
+      "permissions": {
+        "everyone": false,
+        "super": false,
+        "owner": true
+      }
+    }
+  ]
+}
