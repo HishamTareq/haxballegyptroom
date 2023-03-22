@@ -1,0 +1,14 @@
+{
+  "token": "thr1.AAAAAGQaXL-Xm_TpzVEYLg.aT7n4BEUJYM",
+  "password": null,
+  "playerName": null,
+  "roomName": null,
+  "noPlayer": false,
+  "public": false,
+  "maxPlayers": 4,
+  "geo": {
+    "code": "eg",
+    "lat": 0,
+    "lon": 0
+  }
+}
